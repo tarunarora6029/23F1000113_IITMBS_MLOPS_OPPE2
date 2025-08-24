@@ -8,9 +8,9 @@ on:
 
 env:
   PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
-  GCP_REGION: asia-south1
+  GCP_REGION: us-central1
   GKE_CLUSTER: heart-disease-cluster
-  GKE_ZONE: asia-south1-c
+  GKE_ZONE: us-central1-c
   IMAGE: heart-disease-model
   REPO: heart-disease-repo
 
