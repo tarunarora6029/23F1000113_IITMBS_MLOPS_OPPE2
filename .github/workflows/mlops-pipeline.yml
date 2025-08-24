@@ -81,17 +81,22 @@ jobs:
         name: step2-results
         path: results/step2_fairness/
 
-  # Step 3: Build and Deploy
+# Step 3: Build and Deploy - FIXED VERSION
   deploy:
     runs-on: ubuntu-latest
     needs: [explainability, fairness]
     steps:
     - uses: actions/checkout@v4
     
-    - name: Setup GCloud
+    - name: Authenticate to Google Cloud
+      uses: google-github-actions/auth@v2
+      with:
+        credentials_json: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
+        project_id: ${{ secrets.GCP_PROJECT_ID }}
+    
+    - name: Setup GCloud CLI
       uses: google-github-actions/setup-gcloud@v2
       with:
-        service_account_key: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
         project_id: ${{ secrets.GCP_PROJECT_ID }}
         
     - name: Configure Docker
@@ -113,7 +118,7 @@ jobs:
         chmod +x scripts/deploy.sh
         scripts/deploy.sh gcr.io/$PROJECT_ID/$IMAGE:$GITHUB_SHA
 
-  # Step 4: API Testing
+  # Step 4: API Testing - FIXED VERSION
   api-test:
     runs-on: ubuntu-latest
     needs: deploy
@@ -122,11 +127,16 @@ jobs:
     - uses: actions/setup-python@v4
       with:
         python-version: '3.9'
+    
+    - name: Authenticate to Google Cloud
+      uses: google-github-actions/auth@v2
+      with:
+        credentials_json: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
+        project_id: ${{ secrets.GCP_PROJECT_ID }}
         
-    - name: Setup GCloud
+    - name: Setup GCloud CLI
       uses: google-github-actions/setup-gcloud@v2
       with:
-        service_account_key: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
         project_id: ${{ secrets.GCP_PROJECT_ID }}
         
     - name: Install dependencies
@@ -143,7 +153,7 @@ jobs:
         name: step4-results
         path: results/step4_api_testing/
 
-  # Step 5: Performance Testing
+  # Step 5: Performance Testing - FIXED VERSION
   performance:
     runs-on: ubuntu-latest
     needs: api-test
@@ -154,11 +164,16 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install -y wrk
+    
+    - name: Authenticate to Google Cloud
+      uses: google-github-actions/auth@v2
+      with:
+        credentials_json: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
+        project_id: ${{ secrets.GCP_PROJECT_ID }}
         
-    - name: Setup GCloud
+    - name: Setup GCloud CLI
       uses: google-github-actions/setup-gcloud@v2
       with:
-        service_account_key: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
         project_id: ${{ secrets.GCP_PROJECT_ID }}
         
     - name: Run Step 5 - Performance Testing
