@@ -1,21 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: heart-disease-model
+  name: heart-disease-api          # 👈 changed
   labels:
-    app: heart-disease-model
+    app: heart-disease-api         # 👈 changed
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: heart-disease-model
+      app: heart-disease-api       # 👈 changed
   template:
     metadata:
       labels:
-        app: heart-disease-model
+        app: heart-disease-api     # 👈 changed
     spec:
       containers:
-        - name: heart-disease-model
+        - name: heart-disease-api  # 👈 changed
           image: us-central1-docker.pkg.dev/your-heart-disease-mlops/heart-disease-repo/heart-disease-model:latest
           ports:
             - containerPort: 8080
