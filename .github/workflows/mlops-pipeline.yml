@@ -107,16 +107,24 @@ jobs:
       with:
         name: step1-results
         
-    - name: Build and Push Docker
+    - name: Build and Push Docker to Artifact Registry
       run: |
-        docker build -t gcr.io/$PROJECT_ID/$IMAGE:$GITHUB_SHA .
-        docker push gcr.io/$PROJECT_ID/$IMAGE:$GITHUB_SHA
+        REGION="asia-south1"
+        REPO="heart-disease-repo"
+    
+        docker build -t $REGION-docker.pkg.dev/$PROJECT_ID/$REPO/$IMAGE:$GITHUB_SHA .
+        docker push $REGION-docker.pkg.dev/$PROJECT_ID/$REPO/$IMAGE:$GITHUB_SHA
+
         
-    - name: Deploy to GKE
-      run: |
-        gcloud container clusters get-credentials $GKE_CLUSTER --zone $GKE_ZONE
-        chmod +x scripts/deploy.sh
-        scripts/deploy.sh gcr.io/$PROJECT_ID/$IMAGE:$GITHUB_SHA
+      - name: Deploy to GKE
+        run: |
+          REGION="asia-south1"
+          REPO="heart-disease-repo"
+      
+          gcloud container clusters get-credentials $GKE_CLUSTER --zone $GKE_ZONE
+          chmod +x scripts/deploy.sh
+          scripts/deploy.sh $REGION-docker.pkg.dev/$PROJECT_ID/$REPO/$IMAGE:$GITHUB_SHA
+
 
   # Step 4: API Testing - FIXED VERSION
   api-test:
