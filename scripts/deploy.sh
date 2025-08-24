@@ -3,13 +3,25 @@
 # Deployment script for Heart Disease API
 set -e
 
-IMAGE_URL=${1:-"gcr.io/$PROJECT_ID/heart-disease-model:latest"}
+if [[ -z "$1" ]]; then
+  echo "❌ Usage: $0 <IMAGE_URL>"
+  exit 1
+fi
+
+IMAGE_URL=$1
+LATEST_IMAGE=$(echo $IMAGE_URL | sed -E 's/:.+$/:latest/')
 
 echo "🚀 Deploying Heart Disease API to Kubernetes"
-echo "Image: $IMAGE_URL"
+echo "Using Image (SHA pinned): $IMAGE_URL"
+echo "Also tagging as:          $LATEST_IMAGE"
 echo "==========================================="
 
-# Replace image URL in deployment
+# Tag & push SHA image as "latest" too
+docker pull $IMAGE_URL || true   # ensure local availability
+docker tag $IMAGE_URL $LATEST_IMAGE
+docker push $LATEST_IMAGE
+
+# Replace image URL in deployment (SHA pinned)
 export IMAGE_URL=$IMAGE_URL
 envsubst < k8s/deployment.yaml | kubectl apply -f -
 
@@ -34,7 +46,6 @@ if ! kubectl rollout status deployment/heart-disease-api --timeout=600s; then
   done
   exit 1
 fi
-
 
 # Get service information
 echo "📊 Service Information:"
