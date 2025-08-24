@@ -8,10 +8,11 @@ on:
 
 env:
   PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
-  GCP_REGION: us-central1
+  GCP_REGION: asia-south1
   GKE_CLUSTER: heart-disease-cluster
-  GKE_ZONE: us-central1-c
+  GKE_ZONE: asia-south1-c
   IMAGE: heart-disease-model
+  REPO: heart-disease-repo
 
 jobs:
   setup-and-test:
@@ -81,7 +82,7 @@ jobs:
         name: step2-results
         path: results/step2_fairness/
 
-# Step 3: Build and Deploy - FIXED VERSION
+  # Step 3: Build and Deploy
   deploy:
     runs-on: ubuntu-latest
     needs: [explainability, fairness]
@@ -100,7 +101,7 @@ jobs:
         project_id: ${{ secrets.GCP_PROJECT_ID }}
         
     - name: Configure Docker
-      run: gcloud auth configure-docker
+      run: gcloud auth configure-docker $GCP_REGION-docker.pkg.dev
       
     - name: Download model
       uses: actions/download-artifact@v4
@@ -109,24 +110,16 @@ jobs:
         
     - name: Build and Push Docker to Artifact Registry
       run: |
-        REGION="asia-south1"
-        REPO="heart-disease-repo"
-    
-        docker build -t $REGION-docker.pkg.dev/$PROJECT_ID/$REPO/$IMAGE:$GITHUB_SHA .
-        docker push $REGION-docker.pkg.dev/$PROJECT_ID/$REPO/$IMAGE:$GITHUB_SHA
+        docker build -t $GCP_REGION-docker.pkg.dev/$PROJECT_ID/$REPO/$IMAGE:$GITHUB_SHA .
+        docker push $GCP_REGION-docker.pkg.dev/$PROJECT_ID/$REPO/$IMAGE:$GITHUB_SHA
 
-        
-      - name: Deploy to GKE
-        run: |
-          REGION="asia-south1"
-          REPO="heart-disease-repo"
-      
-          gcloud container clusters get-credentials $GKE_CLUSTER --zone $GKE_ZONE
-          chmod +x scripts/deploy.sh
-          scripts/deploy.sh $REGION-docker.pkg.dev/$PROJECT_ID/$REPO/$IMAGE:$GITHUB_SHA
+    - name: Deploy to GKE
+      run: |
+        gcloud container clusters get-credentials $GKE_CLUSTER --zone $GKE_ZONE
+        chmod +x scripts/deploy.sh
+        scripts/deploy.sh $GCP_REGION-docker.pkg.dev/$PROJECT_ID/$REPO/$IMAGE:$GITHUB_SHA
 
-
-  # Step 4: API Testing - FIXED VERSION
+  # Step 4: API Testing
   api-test:
     runs-on: ubuntu-latest
     needs: deploy
@@ -161,7 +154,7 @@ jobs:
         name: step4-results
         path: results/step4_api_testing/
 
-  # Step 5: Performance Testing - FIXED VERSION
+  # Step 5: Performance Testing
   performance:
     runs-on: ubuntu-latest
     needs: api-test
@@ -281,13 +274,11 @@ jobs:
         import os, json, glob
         from datetime import datetime
         
-        # Create simple summary report
         report = []
         report.append('# MLOps Pipeline Results Summary')
         report.append(f'Generated: {datetime.now().isoformat()}')
         report.append('')
         
-        # Check for result files
         result_dirs = glob.glob('results/step*')
         for result_dir in sorted(result_dirs):
             step_name = os.path.basename(result_dir).replace('_', ' ').title()
@@ -307,7 +298,6 @@ jobs:
                 report.append('❌ No results found')
             report.append('')
         
-        # Write report
         with open('final_report/summary.md', 'w') as f:
             f.write('\n'.join(report))
                 
