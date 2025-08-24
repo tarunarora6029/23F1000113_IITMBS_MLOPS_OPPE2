@@ -253,43 +253,43 @@ jobs:
       run: |
         mkdir -p final_report
         python -c "
-import os, json, glob
-from datetime import datetime
-
-# Create simple summary report
-report = []
-report.append('# MLOps Pipeline Results Summary')
-report.append(f'Generated: {datetime.now().isoformat()}')
-report.append('')
-
-# Check for result files
-result_dirs = glob.glob('results/step*')
-for result_dir in sorted(result_dirs):
-    step_name = os.path.basename(result_dir).replace('_', ' ').title()
-    report.append(f'## {step_name}')
-    
-    json_files = glob.glob(f'{result_dir}/*.json')
-    if json_files:
-        report.append('✅ Analysis completed')
-        try:
-            with open(json_files[0], 'r') as f:
-                data = json.load(f)
-                if isinstance(data, dict) and 'timestamp' in data:
-                    report.append(f'Completed: {data[\"timestamp\"]}')
-        except:
-            pass
-    else:
-        report.append('❌ No results found')
-    report.append('')
-
-# Write report
-with open('final_report/summary.md', 'w') as f:
-    f.write('\n'.join(report))
+        import os, json, glob
+        from datetime import datetime
         
-print('Report generated successfully!')
-        "
-      
-    - name: Upload Final Report
+        # Create simple summary report
+        report = []
+        report.append('# MLOps Pipeline Results Summary')
+        report.append(f'Generated: {datetime.now().isoformat()}')
+        report.append('')
+        
+        # Check for result files
+        result_dirs = glob.glob('results/step*')
+        for result_dir in sorted(result_dirs):
+            step_name = os.path.basename(result_dir).replace('_', ' ').title()
+            report.append(f'## {step_name}')
+            
+            json_files = glob.glob(f'{result_dir}/*.json')
+            if json_files:
+                report.append('✅ Analysis completed')
+                try:
+                    with open(json_files[0], 'r') as f:
+                        data = json.load(f)
+                        if isinstance(data, dict) and 'timestamp' in data:
+                            report.append(f'Completed: {data[\"timestamp\"]}')
+                except:
+                    pass
+            else:
+                report.append('❌ No results found')
+            report.append('')
+        
+        # Write report
+        with open('final_report/summary.md', 'w') as f:
+            f.write('\n'.join(report))
+                
+        print('Report generated successfully!')
+                "
+              
+            - name: Upload Final Report
       uses: actions/upload-artifact@v4
       with:
         name: final-report
