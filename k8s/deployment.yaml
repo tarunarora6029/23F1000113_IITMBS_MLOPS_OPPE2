@@ -1,22 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: heart-disease-api          # 👈 changed
+  name: heart-disease-api
   labels:
-    app: heart-disease-api         # 👈 changed
+    app: heart-disease-api
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: heart-disease-api       # 👈 changed
+      app: heart-disease-api
   template:
     metadata:
       labels:
-        app: heart-disease-api     # 👈 changed
+        app: heart-disease-api
     spec:
       containers:
-        - name: heart-disease-api  # 👈 changed
-          image: us-central1-docker.pkg.dev/your-heart-disease-mlops/heart-disease-repo/heart-disease-model:latest
+        - name: heart-disease-api
+          image: ${IMAGE_URL}   # 👈 dynamically replaced in deploy.sh
           ports:
             - containerPort: 8080
           resources:
@@ -26,3 +26,4 @@ spec:
             limits:
               cpu: "500m"
               memory: "1Gi"
+          imagePullPolicy: Always   # 👈 ensures cluster always fetches fresh image
