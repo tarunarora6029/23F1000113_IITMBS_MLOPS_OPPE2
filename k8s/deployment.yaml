@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: heart-disease-model
-          image: asia-south1-docker.pkg.dev/your-heart-disease-mlops/heart-disease-repo/heart-disease-model:latest
+          image: us-central1-docker.pkg.dev/your-heart-disease-mlops/heart-disease-repo/heart-disease-model:latest
           ports:
             - containerPort: 8080
           resources:
