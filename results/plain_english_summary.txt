@@ -1,0 +1,27 @@
+🔍 HEART DISEASE PREDICTION FACTORS:
+==================================================
+
+3. CHEST PAIN TYPE (0-3 SCALE)
+   Impact: INCREASES heart disease risk
+   Strength: 0.975
+
+2. GENDER (0=MALE, 1=FEMALE)
+   Impact: INCREASES heart disease risk
+   Strength: 0.876
+
+10. ST DEPRESSION FROM EXERCISE
+   Impact: DECREASES heart disease risk
+   Strength: 0.706
+
+12. MAJOR VESSELS COLORED (0-3)
+   Impact: DECREASES heart disease risk
+   Strength: 0.676
+
+9. EXERCISE INDUCED ANGINA (1=YES)
+   Impact: DECREASES heart disease risk
+   Strength: 0.471
+
+💡 KEY INSIGHTS:
+- Model uses clinical measurements and symptoms
+- Higher coefficients = stronger predictive power
+- Individual cases may vary based on patient profile

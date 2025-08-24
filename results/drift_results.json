@@ -1,0 +1,30 @@
+{
+  "timestamp": "2025-08-24T14:15:28.187378",
+  "tool": "Evidently AI",
+  "evidently_analysis": {
+    "evidently_available": true,
+    "dashboard_saved": true,
+    "profile_saved": true,
+    "n_features": 13,
+    "n_drifted_features": 13,
+    "share_drifted_features": 1.0,
+    "dataset_drift": true,
+    "drift_by_columns": {},
+    "feature_names": [
+      "age",
+      "gender",
+      "cp",
+      "trestbps",
+      "chol",
+      "fbs",
+      "restecg",
+      "thalach",
+      "exang",
+      "oldpeak",
+      "slope",
+      "ca",
+      "thal"
+    ]
+  },
+  "report": "\ud83d\udea8 INPUT DRIFT DETECTION REPORT\n==================================================\nAnalysis Time: 2025-08-24 14:15:28.187300\nTool: Evidently AI\n\n\ud83d\udcca OVERALL DRIFT SUMMARY:\nTotal Features Analyzed: 13\nFeatures with Drift: 13\nDrift Percentage: 100.0%\nDataset-level Drift: Yes\n\n\ud83d\udca5 POTENTIAL IMPACT:\n\ud83d\udea8 CRITICAL: >50% of features show drift\n   - Model performance may be significantly degraded\n   - Immediate retraining recommended\n\n\ud83d\udca1 RECOMMENDATIONS:\n1. Investigate root causes of distribution shifts\n2. Collect more recent training data\n3. Consider online learning or model adaptation\n4. Implement continuous drift monitoring\n5. Set up automated alerts for drift detection\n\n\ud83d\udcc1 Generated Files:\n- evidently_drift_dashboard.html (Interactive dashboard)\n- evidently_drift_profile.json (Detailed metrics)\n- drift_results.json (Summary results)\n- drift_report.txt (This report)"
+}

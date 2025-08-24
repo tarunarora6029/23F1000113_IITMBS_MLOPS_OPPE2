@@ -1,0 +1,97 @@
+{
+  "overall_performance": {
+    "accuracy": 0.8305084745762712,
+    "precision": 0.7894736842105263,
+    "recall": 0.9375,
+    "f1_score": 0.8571428571428572,
+    "selection_rate": 0.6440677966101694
+  },
+  "performance_by_gender": {
+    "accuracy": {
+      "0": 0.8048780487804879,
+      "1": 0.8888888888888888
+    },
+    "precision": {
+      "0": 0.7391304347826086,
+      "1": 0.8666666666666667
+    },
+    "recall": {
+      "0": 0.8947368421052632,
+      "1": 1.0
+    },
+    "f1_score": {
+      "0": 0.8095238095238095,
+      "1": 0.9285714285714286
+    },
+    "selection_rate": {
+      "0": 0.5609756097560976,
+      "1": 0.8333333333333334
+    }
+  },
+  "fairness_metrics": {
+    "demographic_parity_difference": 0.27235772357723576,
+    "demographic_parity_ratio": 0.6731707317073171,
+    "equalized_odds_difference": 0.12727272727272732,
+    "equalized_odds_ratio": 0.6818181818181818
+  },
+  "fairness_assessment": {
+    "demographic_parity_difference": {
+      "value": 0.27235772357723576,
+      "level": "POOR",
+      "color": "\ud83d\udd34"
+    },
+    "demographic_parity_ratio": {
+      "value": 0.6731707317073171,
+      "level": "POOR",
+      "color": "\ud83d\udd34"
+    },
+    "equalized_odds_difference": {
+      "value": 0.12727272727272732,
+      "level": "CONCERNING",
+      "color": "\ud83d\udfe0"
+    },
+    "equalized_odds_ratio": {
+      "value": 0.6818181818181818,
+      "level": "POOR",
+      "color": "\ud83d\udd34"
+    }
+  },
+  "report": "\u2696\ufe0f FAIRNESS ANALYSIS REPORT\n==================================================\n\n\ud83d\udcca OVERALL MODEL PERFORMANCE:\nOverall Accuracy: 0.831\nOverall Precision: 0.789\nOverall Recall: 0.938\n\n\ud83d\udc65 PERFORMANCE BY GENDER:\nMale (0):\n  Accuracy: 0.805\n  Precision: 0.739\n  Recall: 0.895\nFemale (1):\n  Accuracy: 0.889\n  Precision: 0.867\n  Recall: 1.000\n\n\u2696\ufe0f FAIRNESS METRICS ASSESSMENT:\n\ud83d\udd34 demographic_parity_difference: 0.272 - POOR\n\ud83d\udd34 demographic_parity_ratio: 0.673 - POOR\n\ud83d\udfe0 equalized_odds_difference: 0.127 - CONCERNING\n\ud83d\udd34 equalized_odds_ratio: 0.682 - POOR\n\n\ud83d\udccb INTERPRETATION:\n- Demographic Parity: Equal positive prediction rates across genders\n- Equalized Odds: Equal true/false positive rates across genders\n- Values closer to 0 indicate better fairness\n- Ratios closer to 1 indicate better fairness\n\n\ud83d\udca1 RECOMMENDATIONS:\n\u26a0\ufe0f Fairness issues detected:\n   - demographic_parity_difference: POOR\n   - demographic_parity_ratio: POOR\n   - equalized_odds_difference: CONCERNING\n   - equalized_odds_ratio: POOR\n\n\ud83d\udd27 Suggested Actions:\n1. Consider fairness-aware training methods\n2. Apply post-processing fairness techniques\n3. Collect more balanced training data\n4. Review feature engineering for bias\n\n\ud83d\udd27 AFTER FAIRNESS MITIGATION:\nPost-processed model fairness metrics:\n  demographic_parity_difference: 0.037\n  demographic_parity_ratio: 0.927\n  equalized_odds_difference: 0.332\n  equalized_odds_ratio: 0.227",
+  "fair_model": {
+    "overall_performance": {
+      "accuracy": 0.864406779661017,
+      "precision": 0.9285714285714286,
+      "recall": 0.8125,
+      "f1_score": 0.8666666666666666,
+      "selection_rate": 0.4745762711864407
+    },
+    "performance_by_gender": {
+      "accuracy": {
+        "0": 0.9512195121951219,
+        "1": 0.6666666666666666
+      },
+      "precision": {
+        "0": 0.9473684210526315,
+        "1": 0.8888888888888888
+      },
+      "recall": {
+        "0": 0.9473684210526315,
+        "1": 0.6153846153846154
+      },
+      "f1_score": {
+        "0": 0.9473684210526315,
+        "1": 0.7272727272727274
+      },
+      "selection_rate": {
+        "0": 0.4634146341463415,
+        "1": 0.5
+      }
+    },
+    "fairness_metrics": {
+      "demographic_parity_difference": 0.036585365853658514,
+      "demographic_parity_ratio": 0.926829268292683,
+      "equalized_odds_difference": 0.3319838056680161,
+      "equalized_odds_ratio": 0.22727272727272727
+    }
+  }
+}

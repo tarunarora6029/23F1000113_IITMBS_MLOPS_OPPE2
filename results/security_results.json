@@ -1,0 +1,233 @@
+{
+  "timestamp": "2025-08-24T14:15:27.004659",
+  "attack_type": "Label Interchange",
+  "model_results": {
+    "clean": {
+      "metrics": {
+        "accuracy": 0.8305084745762712,
+        "precision": 0.7894736842105263,
+        "recall": 0.9375,
+        "f1": 0.8571428571428572
+      },
+      "poison_ratio": 0.0
+    },
+    "poison_0.05": {
+      "metrics": {
+        "accuracy": 0.847457627118644,
+        "precision": 0.8108108108108109,
+        "recall": 0.9375,
+        "f1": 0.8695652173913043
+      },
+      "poison_ratio": 0.05
+    },
+    "poison_0.1": {
+      "metrics": {
+        "accuracy": 0.7966101694915254,
+        "precision": 0.7631578947368421,
+        "recall": 0.90625,
+        "f1": 0.8285714285714286
+      },
+      "poison_ratio": 0.1
+    },
+    "poison_0.15": {
+      "metrics": {
+        "accuracy": 0.8135593220338984,
+        "precision": 0.7692307692307693,
+        "recall": 0.9375,
+        "f1": 0.8450704225352113
+      },
+      "poison_ratio": 0.15
+    },
+    "poison_0.2": {
+      "metrics": {
+        "accuracy": 0.8305084745762712,
+        "precision": 0.8055555555555556,
+        "recall": 0.90625,
+        "f1": 0.8529411764705882
+      },
+      "poison_ratio": 0.2
+    },
+    "poison_0.25": {
+      "metrics": {
+        "accuracy": 0.7796610169491526,
+        "precision": 0.7567567567567568,
+        "recall": 0.875,
+        "f1": 0.8115942028985507
+      },
+      "poison_ratio": 0.25
+    }
+  },
+  "impact_analysis": {
+    "poison_ratios": [
+      0.0,
+      5.0,
+      10.0,
+      15.0,
+      20.0,
+      25.0
+    ],
+    "accuracies": [
+      0.8305084745762712,
+      0.847457627118644,
+      0.7966101694915254,
+      0.8135593220338984,
+      0.8305084745762712,
+      0.7796610169491526
+    ],
+    "precisions": [
+      0.7894736842105263,
+      0.8108108108108109,
+      0.7631578947368421,
+      0.7692307692307693,
+      0.8055555555555556,
+      0.7567567567567568
+    ],
+    "recalls": [
+      0.9375,
+      0.9375,
+      0.90625,
+      0.9375,
+      0.90625,
+      0.875
+    ],
+    "f1_scores": [
+      0.8571428571428572,
+      0.8695652173913043,
+      0.8285714285714286,
+      0.8450704225352113,
+      0.8529411764705882,
+      0.8115942028985507
+    ],
+    "baseline_accuracy": 0.8305084745762712,
+    "max_accuracy_loss": 0.05084745762711862,
+    "max_degradation_percent": 6.122448979591834
+  },
+  "feature_importance_changes": [
+    {
+      "feature": "gender",
+      "clean_importance": 0.8349199323555123,
+      "poison_importance": 0.0075444870470353755,
+      "clean_coeff": 0.8349199323555123,
+      "poison_coeff": -0.0075444870470353755,
+      "importance_diff": -0.827375445308477,
+      "coeff_diff": -0.8424644194025477
+    },
+    {
+      "feature": "cp",
+      "clean_importance": 0.931552626531701,
+      "poison_importance": 0.17177816516140074,
+      "clean_coeff": 0.931552626531701,
+      "poison_coeff": 0.17177816516140074,
+      "importance_diff": -0.7597744613703002,
+      "coeff_diff": -0.7597744613703002
+    },
+    {
+      "feature": "ca",
+      "clean_importance": 0.6500325276381089,
+      "poison_importance": 0.040432245445526926,
+      "clean_coeff": -0.6500325276381089,
+      "poison_coeff": -0.040432245445526926,
+      "importance_diff": -0.609600282192582,
+      "coeff_diff": 0.609600282192582
+    },
+    {
+      "feature": "thal",
+      "clean_importance": 0.4368213584133442,
+      "poison_importance": 0.06736730649461176,
+      "clean_coeff": -0.4368213584133442,
+      "poison_coeff": -0.06736730649461176,
+      "importance_diff": -0.36945405191873243,
+      "coeff_diff": 0.36945405191873243
+    },
+    {
+      "feature": "oldpeak",
+      "clean_importance": 0.6741715229640067,
+      "poison_importance": 0.3362812498545342,
+      "clean_coeff": -0.6741715229640067,
+      "poison_coeff": -0.3362812498545342,
+      "importance_diff": -0.3378902731094725,
+      "coeff_diff": 0.3378902731094725
+    },
+    {
+      "feature": "slope",
+      "clean_importance": 0.3549998711235831,
+      "poison_importance": 0.040139540499500456,
+      "clean_coeff": 0.3549998711235831,
+      "poison_coeff": 0.040139540499500456,
+      "importance_diff": -0.31486033062408264,
+      "coeff_diff": -0.31486033062408264
+    },
+    {
+      "feature": "chol",
+      "clean_importance": 0.22853061108381117,
+      "poison_importance": 0.04558929764086359,
+      "clean_coeff": -0.22853061108381117,
+      "poison_coeff": 0.04558929764086359,
+      "importance_diff": -0.1829413134429476,
+      "coeff_diff": 0.2741199087246748
+    },
+    {
+      "feature": "trestbps",
+      "clean_importance": 0.2709320084113578,
+      "poison_importance": 0.1279580709795551,
+      "clean_coeff": -0.2709320084113578,
+      "poison_coeff": 0.1279580709795551,
+      "importance_diff": -0.14297393743180267,
+      "coeff_diff": 0.3988900793909129
+    },
+    {
+      "feature": "exang",
+      "clean_importance": 0.45988349083979607,
+      "poison_importance": 0.3364280789914202,
+      "clean_coeff": -0.45988349083979607,
+      "poison_coeff": -0.3364280789914202,
+      "importance_diff": -0.12345541184837588,
+      "coeff_diff": 0.12345541184837588
+    },
+    {
+      "feature": "restecg",
+      "clean_importance": 0.2953859583684443,
+      "poison_importance": 0.278803446884831,
+      "clean_coeff": 0.2953859583684443,
+      "poison_coeff": 0.278803446884831,
+      "importance_diff": -0.016582511483613283,
+      "coeff_diff": -0.016582511483613283
+    },
+    {
+      "feature": "age",
+      "clean_importance": 0.17458989353584534,
+      "poison_importance": 0.15856389018466963,
+      "clean_coeff": -0.17458989353584534,
+      "poison_coeff": 0.15856389018466963,
+      "importance_diff": -0.01602600335117571,
+      "coeff_diff": 0.33315378372051496
+    },
+    {
+      "feature": "thalach",
+      "clean_importance": 0.3039980962966774,
+      "poison_importance": 0.29826669219646146,
+      "clean_coeff": 0.3039980962966774,
+      "poison_coeff": 0.29826669219646146,
+      "importance_diff": -0.005731404100215942,
+      "coeff_diff": -0.005731404100215942
+    },
+    {
+      "feature": "fbs",
+      "clean_importance": 0.22472576453141246,
+      "poison_importance": 0.2233139171854753,
+      "clean_coeff": -0.22472576453141246,
+      "poison_coeff": -0.2233139171854753,
+      "importance_diff": -0.0014118473459371617,
+      "coeff_diff": 0.0014118473459371617
+    }
+  ],
+  "detection_analysis": {
+    "total_test_samples": 59,
+    "disagreements": "11",
+    "disagreement_rate": 0.1864406779661017,
+    "avg_confidence_diff": 0.16694676681963358,
+    "max_confidence_diff": 0.47156968751889494,
+    "suspicious_samples": "0"
+  },
+  "security_report": "\ud83d\udee1\ufe0f SECURITY ANALYSIS REPORT - DATA POISONING ATTACK\n============================================================\nAnalysis Time: 2025-08-24 14:15:27.004063\n\n\ud83c\udfaf ATTACK SUMMARY:\nAttack Type: Label Interchange (Label Flipping)\nPoisoning Levels Tested: 5%, 10%, 15%, 20%, 25%\nBaseline Model Accuracy: 0.8305\nMaximum Accuracy Loss: 0.0508\nMaximum Performance Degradation: 6.1%\n\n\ud83d\udea8 VULNERABILITY ASSESSMENT:\nRisk Level: \ud83d\udfe2 LOW\nModel shows 6.1% performance degradation under attack\n\n\ud83d\udcca PERFORMANCE IMPACT BY METRIC:\nAccuracy:  0.8305 \u2192 0.7797 (\u0394 -0.0508)\nPrecision: 0.7895 \u2192 0.7568 (\u0394 -0.0327)\nRecall:    0.9375 \u2192 0.8750 (\u0394 -0.0625)\nF1-Score:  0.8571 \u2192 0.8116 (\u0394 -0.0455)\n\n\ud83d\udd0d FEATURE IMPORTANCE ANALYSIS:\nTop 3 features most affected by poisoning:\n1. gender: \u0394 -0.8274\n2. cp: \u0394 -0.7598\n3. ca: \u0394 -0.6096\n\n\ud83d\udd75\ufe0f POISON DETECTION ANALYSIS:\nModel Disagreement Rate: 18.6%\nAverage Confidence Difference: 0.1669\nSuspicious Samples Detected: 0\n\u26a0\ufe0f High disagreement rate suggests potential poisoning\n\n\ud83d\udca1 SECURITY RECOMMENDATIONS:\n\n\ud83d\udee1\ufe0f GENERAL SECURITY MEASURES:\n1. Establish secure data collection pipelines\n2. Implement data provenance tracking\n3. Use statistical tests to detect label anomalies\n4. Deploy multiple models for cross-validation\n5. Regular model retraining with verified data\n6. Implement model monitoring and drift detection\n\n\ud83d\udd27 MITIGATION STRATEGIES:\n1. Data Sanitization: Remove suspicious samples before training\n2. Robust Training: Use techniques like RONI (Reject on Negative Impact)\n3. Byzantine-Robust Algorithms: Use aggregation methods resilient to outliers\n4. Certified Defense: Implement provably robust training methods\n5. Federated Learning: Reduce single points of failure\n\n\ud83d\udcc1 Generated Files:\n- performance_degradation.png (Individual metrics)\n- combined_performance.png (All metrics together)\n- feature_importance_comparison.png (Feature analysis)\n- security_results.json (Detailed metrics)"
+}

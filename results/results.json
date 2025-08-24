@@ -1,0 +1,161 @@
+{
+  "feature_importance": [
+    {
+      "feature": "cp",
+      "coefficient": 0.9745932501717984,
+      "abs_coefficient": 0.9745932501717984
+    },
+    {
+      "feature": "gender",
+      "coefficient": 0.8763732661035613,
+      "abs_coefficient": 0.8763732661035613
+    },
+    {
+      "feature": "oldpeak",
+      "coefficient": -0.7063661388291097,
+      "abs_coefficient": 0.7063661388291097
+    },
+    {
+      "feature": "ca",
+      "coefficient": -0.6757261310373025,
+      "abs_coefficient": 0.6757261310373025
+    },
+    {
+      "feature": "exang",
+      "coefficient": -0.47079752391098306,
+      "abs_coefficient": 0.47079752391098306
+    },
+    {
+      "feature": "thal",
+      "coefficient": -0.44978488670150313,
+      "abs_coefficient": 0.44978488670150313
+    },
+    {
+      "feature": "slope",
+      "coefficient": 0.36226337638118106,
+      "abs_coefficient": 0.36226337638118106
+    },
+    {
+      "feature": "restecg",
+      "coefficient": 0.31128165481964093,
+      "abs_coefficient": 0.31128165481964093
+    },
+    {
+      "feature": "thalach",
+      "coefficient": 0.30450336412078033,
+      "abs_coefficient": 0.30450336412078033
+    },
+    {
+      "feature": "trestbps",
+      "coefficient": -0.28401508964517436,
+      "abs_coefficient": 0.28401508964517436
+    },
+    {
+      "feature": "chol",
+      "coefficient": -0.24058496031605595,
+      "abs_coefficient": 0.24058496031605595
+    },
+    {
+      "feature": "fbs",
+      "coefficient": -0.23595922072465497,
+      "abs_coefficient": 0.23595922072465497
+    },
+    {
+      "feature": "age",
+      "coefficient": -0.17789059191949247,
+      "abs_coefficient": 0.17789059191949247
+    }
+  ],
+  "lime_results": [
+    {
+      "sample": 1,
+      "prediction": 1,
+      "probability": [
+        0.3232564060299168,
+        0.6767435939700832
+      ],
+      "top_features": [
+        [
+          "gender <= -0.67",
+          -0.22627222538859407
+        ],
+        [
+          "thal <= -0.55",
+          0.17765461889167736
+        ],
+        [
+          "-0.60 < slope <= 1.03",
+          0.12909266575496853
+        ],
+        [
+          "ca <= -0.69",
+          0.12127126092888836
+        ],
+        [
+          "exang <= -0.70",
+          0.11640779800642831
+        ]
+      ]
+    },
+    {
+      "sample": 2,
+      "prediction": 0,
+      "probability": [
+        0.9369110365559018,
+        0.06308896344409821
+      ],
+      "top_features": [
+        [
+          "gender <= -0.67",
+          -0.21988010564218868
+        ],
+        [
+          "-0.55 < thal <= 1.06",
+          -0.1761363743300565
+        ],
+        [
+          "0.07 < cp <= 1.06",
+          0.1621119589846491
+        ],
+        [
+          "slope <= -0.60",
+          -0.13516758459123351
+        ],
+        [
+          "ca <= -0.69",
+          0.13030595171985418
+        ]
+      ]
+    },
+    {
+      "sample": 3,
+      "prediction": 0,
+      "probability": [
+        0.9923046083230374,
+        0.007695391676962611
+      ],
+      "top_features": [
+        [
+          "gender <= -0.67",
+          -0.2297036701769688
+        ],
+        [
+          "oldpeak > 0.61",
+          -0.22871580379462095
+        ],
+        [
+          "ca > 0.26",
+          -0.19327660619815737
+        ],
+        [
+          "-0.55 < thal <= 1.06",
+          -0.17706395720930881
+        ],
+        [
+          "cp <= -0.91",
+          -0.14111625712402537
+        ]
+      ]
+    }
+  ]
+}

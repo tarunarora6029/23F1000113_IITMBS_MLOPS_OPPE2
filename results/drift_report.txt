@@ -1,0 +1,28 @@
+🚨 INPUT DRIFT DETECTION REPORT
+==================================================
+Analysis Time: 2025-08-24 14:15:28.187300
+Tool: Evidently AI
+
+📊 OVERALL DRIFT SUMMARY:
+Total Features Analyzed: 13
+Features with Drift: 13
+Drift Percentage: 100.0%
+Dataset-level Drift: Yes
+
+💥 POTENTIAL IMPACT:
+🚨 CRITICAL: >50% of features show drift
+   - Model performance may be significantly degraded
+   - Immediate retraining recommended
+
+💡 RECOMMENDATIONS:
+1. Investigate root causes of distribution shifts
+2. Collect more recent training data
+3. Consider online learning or model adaptation
+4. Implement continuous drift monitoring
+5. Set up automated alerts for drift detection
+
+📁 Generated Files:
+- evidently_drift_dashboard.html (Interactive dashboard)
+- evidently_drift_profile.json (Detailed metrics)
+- drift_results.json (Summary results)
+- drift_report.txt (This report)

@@ -1,0 +1,55 @@
+🛡️ SECURITY ANALYSIS REPORT - DATA POISONING ATTACK
+============================================================
+Analysis Time: 2025-08-24 14:15:27.004063
+
+🎯 ATTACK SUMMARY:
+Attack Type: Label Interchange (Label Flipping)
+Poisoning Levels Tested: 5%, 10%, 15%, 20%, 25%
+Baseline Model Accuracy: 0.8305
+Maximum Accuracy Loss: 0.0508
+Maximum Performance Degradation: 6.1%
+
+🚨 VULNERABILITY ASSESSMENT:
+Risk Level: 🟢 LOW
+Model shows 6.1% performance degradation under attack
+
+📊 PERFORMANCE IMPACT BY METRIC:
+Accuracy:  0.8305 → 0.7797 (Δ -0.0508)
+Precision: 0.7895 → 0.7568 (Δ -0.0327)
+Recall:    0.9375 → 0.8750 (Δ -0.0625)
+F1-Score:  0.8571 → 0.8116 (Δ -0.0455)
+
+🔍 FEATURE IMPORTANCE ANALYSIS:
+Top 3 features most affected by poisoning:
+1. gender: Δ -0.8274
+2. cp: Δ -0.7598
+3. ca: Δ -0.6096
+
+🕵️ POISON DETECTION ANALYSIS:
+Model Disagreement Rate: 18.6%
+Average Confidence Difference: 0.1669
+Suspicious Samples Detected: 0
+⚠️ High disagreement rate suggests potential poisoning
+
+💡 SECURITY RECOMMENDATIONS:
+
+🛡️ GENERAL SECURITY MEASURES:
+1. Establish secure data collection pipelines
+2. Implement data provenance tracking
+3. Use statistical tests to detect label anomalies
+4. Deploy multiple models for cross-validation
+5. Regular model retraining with verified data
+6. Implement model monitoring and drift detection
+
+🔧 MITIGATION STRATEGIES:
+1. Data Sanitization: Remove suspicious samples before training
+2. Robust Training: Use techniques like RONI (Reject on Negative Impact)
+3. Byzantine-Robust Algorithms: Use aggregation methods resilient to outliers
+4. Certified Defense: Implement provably robust training methods
+5. Federated Learning: Reduce single points of failure
+
+📁 Generated Files:
+- performance_degradation.png (Individual metrics)
+- combined_performance.png (All metrics together)
+- feature_importance_comparison.png (Feature analysis)
+- security_results.json (Detailed metrics)

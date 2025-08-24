@@ -1,0 +1,26 @@
+{
+  "feature_names": [
+    "age",
+    "gender",
+    "cp",
+    "trestbps",
+    "chol",
+    "fbs",
+    "restecg",
+    "thalach",
+    "exang",
+    "oldpeak",
+    "slope",
+    "ca",
+    "thal"
+  ],
+  "gender_mapping": {
+    "male": 0,
+    "female": 1
+  },
+  "model_type": "LogisticRegression",
+  "target_classes": [
+    "no",
+    "yes"
+  ]
+}
