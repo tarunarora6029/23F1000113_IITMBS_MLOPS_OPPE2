@@ -1,40 +1,45 @@
 # Core ML/Data Science
-pandas==2.0.3
-numpy==1.24.3
-scikit-learn==1.3.0
-matplotlib==3.7.1
+pandas==1.5.3
+numpy==1.23.5
+scikit-learn==1.2.2
+matplotlib==3.6.3
 seaborn==0.12.2
-scipy==1.11.1
-joblib==1.3.2
+scipy==1.10.1
+joblib==1.2.0
 
 # Explainability
 lime==0.2.0.1
-shap==0.42.1
+shap==0.41.0
 
 # Fairness
-fairlearn==0.9.0
+fairlearn==0.8.0
 
-# API Framework
-fastapi==0.103.1
-uvicorn[standard]==0.23.2
-pydantic==2.3.0
-python-multipart==0.0.6
+# API Framework - Pydantic v1 compatible versions
+fastapi==0.68.0
+uvicorn==0.15.0
+pydantic==1.10.12
+python-multipart==0.0.5
 
-# Drift Detection
-evidently==0.4.2
-alibi-detect==0.11.4
+# Drift Detection - Evidently with compatible pydantic
+evidently==0.2.8
+# Skip alibi-detect as it has more complex dependencies
 
 # Monitoring and Logging
-prometheus-client==0.17.1
-structlog==23.1.0
+prometheus-client==0.16.0
+structlog==22.3.0
 python-json-logger==2.0.7
 
 # HTTP Requests
-requests==2.31.0
+requests==2.28.2
 
 # Utilities
 python-dotenv==1.0.0
 jinja2==3.1.2
+
+# Testing (for CI/CD)
+pytest==7.4.0
+pytest-asyncio==0.21.1
+httpx==0.24.1
 
 # Testing (for CI/CD)
 pytest==7.4.0
