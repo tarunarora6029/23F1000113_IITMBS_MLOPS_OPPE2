@@ -17,9 +17,24 @@ envsubst < k8s/deployment.yaml | kubectl apply -f -
 kubectl apply -f k8s/service.yaml
 kubectl apply -f k8s/hpa.yaml
 
-# Wait for deployment to complete
+# Wait for deployment to complete (bump timeout)
 echo "⏳ Waiting for deployment to complete..."
-kubectl rollout status deployment/heart-disease-api --timeout=300s
+if ! kubectl rollout status deployment/heart-disease-api --timeout=600s; then
+  echo "❌ Rollout timed out. Collecting diagnostics…"
+  kubectl get pods -l app=heart-disease-api -o wide
+  echo "---- Events (namespace default) ----"
+  kubectl get events --sort-by=.lastTimestamp | tail -n 100
+  echo "---- Describe Pods ----"
+  for p in $(kubectl get pods -l app=heart-disease-api -o name); do
+    echo "==== $p ===="; kubectl describe $p; echo;
+  done
+  echo "---- Recent Logs ----"
+  for p in $(kubectl get pods -l app=heart-disease-api -o name); do
+    echo "==== $p ===="; kubectl logs --tail=200 $p || true; echo;
+  done
+  exit 1
+fi
+
 
 # Get service information
 echo "📊 Service Information:"
