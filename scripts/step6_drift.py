@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Step 6: Input Drift Detection
-Compare training data with prediction data to detect distribution shifts
+Using Evidently AI only for comprehensive drift analysis
 """
 
 import pandas as pd
@@ -9,28 +9,24 @@ import numpy as np
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-import seaborn as sns
-from scipy import stats
-import joblib
 import json
 import os
 import warnings
 warnings.filterwarnings('ignore')
 
-# Drift detection libraries
+# Evidently library
 try:
-    from evidently.report import Report
-    from evidently.metrics import DataDriftPreset, DataQualityPreset
-    from evidently import ColumnMapping
-    from alibi_detect.cd import KSDrift
-    from alibi_detect.utils.saving import save_detector, load_detector
+    from evidently.dashboard import Dashboard
+    from evidently.dashboard.tabs import DataDriftTab
+    from evidently.model_profile import Profile
+    from evidently.model_profile.sections import DataDriftProfileSection
 except ImportError as e:
-    print(f"Installing drift detection libraries: {e}")
-    os.system("pip install evidently alibi-detect")
-    from evidently.report import Report
-    from evidently.metrics import DataDriftPreset, DataQualityPreset
-    from evidently import ColumnMapping
-    from alibi_detect.cd import KSDrift
+    print(f"Installing evidently: {e}")
+    os.system("pip install evidently==0.2.8")
+    from evidently.dashboard import Dashboard
+    from evidently.dashboard.tabs import DataDriftTab
+    from evidently.model_profile import Profile
+    from evidently.model_profile.sections import DataDriftProfileSection
 
 def create_directories():
     """Create results directory"""
@@ -117,249 +113,125 @@ def generate_prediction_samples(n_samples=100):
     
     return df_pred
 
-def statistical_drift_detection(X_train, X_pred, feature_names, alpha=0.05):
-    """Perform statistical drift detection using various tests"""
-    print("📈 Performing statistical drift detection...")
-    
-    drift_results = []
-    
-    for feature in feature_names:
-        train_values = X_train[feature].values
-        pred_values = X_pred[feature].values
-        
-        # Kolmogorov-Smirnov test
-        ks_stat, ks_pvalue = stats.ks_2samp(train_values, pred_values)
-        
-        # Mann-Whitney U test (for non-parametric comparison)
-        try:
-            mw_stat, mw_pvalue = stats.mannwhitneyu(train_values, pred_values, alternative='two-sided')
-        except ValueError:
-            mw_stat, mw_pvalue = np.nan, np.nan
-        
-        # Anderson-Darling test
-        try:
-            ad_stat, ad_critical, ad_significance = stats.anderson_ksamp([train_values, pred_values])
-            ad_pvalue = 1 - ad_significance if ad_stat > ad_critical[2] else ad_significance
-        except:
-            ad_stat, ad_pvalue = np.nan, np.nan
-        
-        # Effect size (Cohen's d for continuous variables)
-        mean_diff = np.mean(pred_values) - np.mean(train_values)
-        pooled_std = np.sqrt((np.var(train_values) + np.var(pred_values)) / 2)
-        cohens_d = mean_diff / pooled_std if pooled_std > 0 else 0
-        
-        # Determine drift
-        drift_detected = ks_pvalue < alpha
-        drift_severity = "High" if ks_pvalue < 0.01 else "Medium" if ks_pvalue < 0.05 else "Low"
-        
-        drift_results.append({
-            'feature': feature,
-            'ks_statistic': ks_stat,
-            'ks_pvalue': ks_pvalue,
-            'mw_statistic': mw_stat,
-            'mw_pvalue': mw_pvalue,
-            'ad_statistic': ad_stat,
-            'ad_pvalue': ad_pvalue,
-            'cohens_d': cohens_d,
-            'drift_detected': drift_detected,
-            'drift_severity': drift_severity,
-            'train_mean': np.mean(train_values),
-            'pred_mean': np.mean(pred_values),
-            'train_std': np.std(train_values),
-            'pred_std': np.std(pred_values)
-        })
-    
-    return pd.DataFrame(drift_results)
-
 def evidently_drift_analysis(X_train, X_pred, feature_names):
     """Use Evidently AI for comprehensive drift analysis"""
     print("🔍 Running Evidently drift analysis...")
     
     try:
         # Prepare data for Evidently
-        train_df = X_train.copy()
-        train_df['dataset'] = 'reference'
+        reference_data = X_train.copy()
+        current_data = X_pred[feature_names].copy()  # Ensure same columns
         
-        pred_df = X_pred[feature_names].copy()  # Ensure same columns
-        pred_df['dataset'] = 'current'
+        print(f"Reference data shape: {reference_data.shape}")
+        print(f"Current data shape: {current_data.shape}")
         
-        # Column mapping
-        column_mapping = ColumnMapping()
-        column_mapping.numerical_features = feature_names
+        # Create drift dashboard
+        data_drift_dashboard = Dashboard(tabs=[DataDriftTab()])
+        data_drift_dashboard.calculate(reference_data, current_data)
         
-        # Create drift report
-        data_drift_report = Report(metrics=[
-            DataDriftPreset(),
-            DataQualityPreset(),
-        ])
+        # Save interactive dashboard
+        dashboard_path = 'results/step6_drift/evidently_drift_dashboard.html'
+        data_drift_dashboard.save(dashboard_path)
+        print(f"✅ Dashboard saved to: {dashboard_path}")
         
-        data_drift_report.run(reference_data=train_df, current_data=pred_df, column_mapping=column_mapping)
+        # Create profile for extracting metrics
+        data_drift_profile = Profile(sections=[DataDriftProfileSection()])
+        data_drift_profile.calculate(reference_data, current_data)
         
-        # Save report
-        data_drift_report.save_html('results/step6_drift/evidently_drift_report.html')
+        # Save profile JSON
+        profile_json = data_drift_profile.json()
+        profile_path = 'results/step6_drift/evidently_drift_profile.json'
+        with open(profile_path, 'w') as f:
+            f.write(profile_json)
+        print(f"✅ Profile saved to: {profile_path}")
         
-        # Extract key metrics
-        report_dict = data_drift_report.as_dict()
+        # Parse profile for key metrics
+        profile_dict = json.loads(profile_json)
         
-        return {
+        # Extract drift metrics from profile
+        drift_section = profile_dict.get('data_drift', {})
+        drift_data = drift_section.get('data', {})
+        drift_metrics = drift_data.get('metrics', {})
+        
+        drift_info = {
             'evidently_available': True,
-            'report_saved': True,
-            'report_dict': report_dict
+            'dashboard_saved': True,
+            'profile_saved': True,
+            'n_features': drift_metrics.get('n_features', len(feature_names)),
+            'n_drifted_features': drift_metrics.get('n_drifted_features', 0),
+            'share_drifted_features': drift_metrics.get('share_drifted_features', 0.0),
+            'dataset_drift': drift_metrics.get('dataset_drift', False),
+            'drift_by_columns': drift_data.get('drift_by_columns', {}),
+            'feature_names': feature_names
         }
         
+        print(f"📊 Drift Analysis Results:")
+        print(f"   Total features: {drift_info['n_features']}")
+        print(f"   Drifted features: {drift_info['n_drifted_features']}")
+        print(f"   Drift percentage: {drift_info['share_drifted_features']:.1%}")
+        print(f"   Dataset drift detected: {drift_info['dataset_drift']}")
+        
+        return drift_info
+        
     except Exception as e:
-        print(f"Evidently analysis failed: {e}")
+        print(f"❌ Evidently analysis failed: {e}")
+        import traceback
+        traceback.print_exc()
         return {
             'evidently_available': False,
             'error': str(e)
         }
 
-def alibi_drift_detection(X_train, X_pred, feature_names):
-    """Use Alibi Detect for drift detection"""
-    print("🚨 Setting up Alibi drift detector...")
-    
-    try:
-        # Convert to numpy arrays
-        X_train_array = X_train[feature_names].values.astype(np.float32)
-        X_pred_array = X_pred[feature_names].values.astype(np.float32)
-        
-        # Create KS drift detector
-        drift_detector = KSDrift(X_train_array, p_val=0.05)
-        
-        # Detect drift
-        drift_prediction = drift_detector.predict(X_pred_array)
-        
-        # Save detector
-        save_detector(drift_detector, 'results/step6_drift/ks_drift_detector')
-        
-        return {
-            'alibi_available': True,
-            'drift_detected': bool(drift_prediction['data']['is_drift']),
-            'p_value': float(drift_prediction['data']['p_val']),
-            'threshold': drift_detector.p_val,
-            'drift_prediction': drift_prediction
-        }
-        
-    except Exception as e:
-        print(f"Alibi detection failed: {e}")
-        return {
-            'alibi_available': False,
-            'error': str(e)
-        }
-
-def visualize_drift(X_train, X_pred, drift_results, feature_names):
-    """Create drift visualization plots"""
-    print("📊 Creating drift visualizations...")
-    
-    # Sort features by drift severity
-    drift_features = drift_results.nlargest(6, 'ks_statistic')
-    
-    fig, axes = plt.subplots(3, 2, figsize=(15, 18))
-    axes = axes.ravel()
-    
-    for i, (_, row) in enumerate(drift_features.iterrows()):
-        if i >= 6:
-            break
-            
-        feature = row['feature']
-        
-        # Distribution comparison
-        ax = axes[i]
-        
-        train_values = X_train[feature].values
-        pred_values = X_pred[feature].values
-        
-        ax.hist(train_values, bins=30, alpha=0.7, label='Training', color='blue', density=True)
-        ax.hist(pred_values, bins=30, alpha=0.7, label='Prediction', color='red', density=True)
-        
-        ax.set_title(f'{feature} Distribution\nKS p-value: {row["ks_pvalue"]:.4f}', fontweight='bold')
-        ax.set_xlabel(feature)
-        ax.set_ylabel('Density')
-        ax.legend()
-        ax.grid(True, alpha=0.3)
-        
-        # Add statistics text
-        stats_text = f"Training: μ={row['train_mean']:.2f}, σ={row['train_std']:.2f}\n"
-        stats_text += f"Prediction: μ={row['pred_mean']:.2f}, σ={row['pred_std']:.2f}\n"
-        stats_text += f"Cohen's d: {row['cohens_d']:.3f}"
-        
-        ax.text(0.02, 0.98, stats_text, transform=ax.transAxes, 
-                verticalalignment='top', bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.8))
-    
-    plt.tight_layout()
-    plt.savefig('results/step6_drift/feature_distributions.png', dpi=150, bbox_inches='tight')
-    plt.close()
-    
-    # Drift summary heatmap
-    plt.figure(figsize=(12, 8))
-    
-    # Create drift matrix
-    drift_matrix = drift_results.set_index('feature')[['ks_pvalue', 'cohens_d', 'drift_detected']]
-    
-    # Convert drift_detected to numeric
-    drift_matrix['drift_detected'] = drift_matrix['drift_detected'].astype(int)
-    
-    # Create heatmap
-    sns.heatmap(drift_matrix.T, annot=True, cmap='RdYlBu_r', center=0, 
-                cbar_kws={'label': 'Drift Intensity'})
-    plt.title('Drift Detection Summary Heatmap', fontsize=14, fontweight='bold')
-    plt.xlabel('Features')
-    plt.ylabel('Drift Metrics')
-    plt.tight_layout()
-    plt.savefig('results/step6_drift/drift_heatmap.png', dpi=150, bbox_inches='tight')
-    plt.close()
-
-def generate_drift_report(drift_results, evidently_result, alibi_result):
-    """Generate comprehensive drift analysis report"""
+def generate_drift_report(drift_info):
+    """Generate comprehensive drift analysis report using Evidently results"""
     
     report = []
     report.append("🚨 INPUT DRIFT DETECTION REPORT")
     report.append("="*50)
     report.append(f"Analysis Time: {pd.Timestamp.now()}")
+    report.append("Tool: Evidently AI")
+    
+    if not drift_info.get('evidently_available', False):
+        report.append(f"\n❌ ANALYSIS FAILED:")
+        report.append(f"Error: {drift_info.get('error', 'Unknown error')}")
+        return "\n".join(report)
     
     # Overall drift summary
-    total_features = len(drift_results)
-    drifted_features = len(drift_results[drift_results['drift_detected']])
-    drift_percentage = (drifted_features / total_features) * 100
+    total_features = drift_info.get('n_features', 0)
+    drifted_features = drift_info.get('n_drifted_features', 0)
+    drift_percentage = drift_info.get('share_drifted_features', 0.0) * 100
+    dataset_drift = drift_info.get('dataset_drift', False)
     
     report.append(f"\n📊 OVERALL DRIFT SUMMARY:")
     report.append(f"Total Features Analyzed: {total_features}")
     report.append(f"Features with Drift: {drifted_features}")
     report.append(f"Drift Percentage: {drift_percentage:.1f}%")
+    report.append(f"Dataset-level Drift: {'Yes' if dataset_drift else 'No'}")
     
     # Feature-wise drift analysis
-    report.append(f"\n🔍 FEATURE-WISE DRIFT ANALYSIS:")
-    
-    high_drift = drift_results[drift_results['drift_severity'] == 'High']
-    medium_drift = drift_results[drift_results['drift_severity'] == 'Medium']
-    
-    if len(high_drift) > 0:
-        report.append(f"\n🚨 HIGH DRIFT FEATURES:")
-        for _, row in high_drift.iterrows():
-            report.append(f"  • {row['feature']}: p-value={row['ks_pvalue']:.4f}, Cohen's d={row['cohens_d']:.3f}")
-    
-    if len(medium_drift) > 0:
-        report.append(f"\n⚠️ MEDIUM DRIFT FEATURES:")
-        for _, row in medium_drift.iterrows():
-            report.append(f"  • {row['feature']}: p-value={row['ks_pvalue']:.4f}, Cohen's d={row['cohens_d']:.3f}")
-    
-    # Top 5 most drifted features
-    top_drift = drift_results.nsmallest(5, 'ks_pvalue')
-    report.append(f"\n📈 TOP 5 MOST DRIFTED FEATURES:")
-    for i, (_, row) in enumerate(top_drift.iterrows(), 1):
-        report.append(f"{i}. {row['feature']}: KS p-value={row['ks_pvalue']:.6f}")
-    
-    # Alibi results
-    if alibi_result.get('alibi_available'):
-        report.append(f"\n🤖 ALIBI DETECT RESULTS:")
-        report.append(f"Overall Drift Detected: {'Yes' if alibi_result['drift_detected'] else 'No'}")
-        report.append(f"P-value: {alibi_result['p_value']:.6f}")
-        report.append(f"Threshold: {alibi_result['threshold']}")
-    
-    # Evidently results
-    if evidently_result.get('evidently_available'):
-        report.append(f"\n📋 EVIDENTLY AI ANALYSIS:")
-        report.append(f"✅ Comprehensive drift report generated: evidently_drift_report.html")
+    drift_by_columns = drift_info.get('drift_by_columns', {})
+    if drift_by_columns:
+        report.append(f"\n🔍 FEATURE-WISE DRIFT ANALYSIS:")
+        
+        drifted_features_list = []
+        stable_features_list = []
+        
+        for feature, drift_data in drift_by_columns.items():
+            if isinstance(drift_data, dict) and drift_data.get('drift_detected', False):
+                p_value = drift_data.get('stattest_threshold', 'N/A')
+                drifted_features_list.append(f"  • {feature}: p-value threshold {p_value}")
+            else:
+                stable_features_list.append(f"  • {feature}")
+        
+        if drifted_features_list:
+            report.append(f"\n🚨 FEATURES WITH DRIFT:")
+            report.extend(drifted_features_list)
+        
+        if stable_features_list:
+            report.append(f"\n✅ STABLE FEATURES:")
+            report.extend(stable_features_list[:5])  # Show first 5 to keep report manageable
+            if len(stable_features_list) > 5:
+                report.append(f"  ... and {len(stable_features_list) - 5} more")
     
     # Impact assessment
     report.append(f"\n💥 POTENTIAL IMPACT:")
@@ -384,7 +256,7 @@ def generate_drift_report(drift_results, evidently_result, alibi_result):
     # Recommendations
     report.append(f"\n💡 RECOMMENDATIONS:")
     
-    if drifted_features > 0:
+    if drift_percentage > 0:
         report.append("1. Investigate root causes of distribution shifts")
         report.append("2. Collect more recent training data")
         report.append("3. Consider online learning or model adaptation")
@@ -395,31 +267,26 @@ def generate_drift_report(drift_results, evidently_result, alibi_result):
         report.append("2. Maintain regular drift detection schedule")
     
     report.append(f"\n📁 Generated Files:")
-    report.append("- feature_distributions.png (Visual comparison)")
-    report.append("- drift_heatmap.png (Summary visualization)")
-    report.append("- drift_results.json (Detailed metrics)")
-    if evidently_result.get('evidently_available'):
-        report.append("- evidently_drift_report.html (Interactive report)")
+    report.append("- evidently_drift_dashboard.html (Interactive dashboard)")
+    report.append("- evidently_drift_profile.json (Detailed metrics)")
+    report.append("- drift_results.json (Summary results)")
+    report.append("- drift_report.txt (This report)")
     
     return "\n".join(report)
 
-def save_results(drift_results, evidently_result, alibi_result, report):
+def save_results(drift_info, report):
     """Save all drift detection results"""
     print("💾 Saving drift detection results...")
     
     results = {
         'timestamp': pd.Timestamp.now().isoformat(),
-        'statistical_drift': drift_results.to_dict('records'),
-        'evidently_analysis': evidently_result,
-        'alibi_analysis': alibi_result,
+        'tool': 'Evidently AI',
+        'evidently_analysis': drift_info,
         'report': report
     }
     
     with open('results/step6_drift/drift_results.json', 'w') as f:
         json.dump(results, f, indent=2, default=str)
-    
-    # Save detailed drift results as CSV
-    drift_results.to_csv('results/step6_drift/detailed_drift_analysis.csv', index=False)
     
     # Save report as text
     with open('results/step6_drift/drift_report.txt', 'w') as f:
@@ -427,8 +294,8 @@ def save_results(drift_results, evidently_result, alibi_result, report):
 
 def main():
     """Main execution function"""
-    print("🚀 Starting Step 6: Input Drift Detection")
-    print("="*50)
+    print("🚀 Starting Step 6: Input Drift Detection with Evidently AI")
+    print("="*60)
     
     create_directories()
     
@@ -439,25 +306,20 @@ def main():
     print(f"Training data: {X_train.shape}")
     print(f"Prediction data: {X_pred.shape}")
     
-    # Statistical drift detection
-    drift_results = statistical_drift_detection(X_train, X_pred, feature_names)
-    
-    # Advanced drift analysis
-    evidently_result = evidently_drift_analysis(X_train, X_pred, feature_names)
-    alibi_result = alibi_drift_detection(X_train, X_pred, feature_names)
-    
-    # Visualizations
-    visualize_drift(X_train, X_pred, drift_results, feature_names)
+    # Run Evidently drift analysis
+    drift_info = evidently_drift_analysis(X_train, X_pred, feature_names)
     
     # Generate report
-    report = generate_drift_report(drift_results, evidently_result, alibi_result)
+    report = generate_drift_report(drift_info)
+    print("\n" + "="*60)
     print(report)
     
     # Save results
-    save_results(drift_results, evidently_result, alibi_result, report)
+    save_results(drift_info, report)
     
     print("\n✅ Step 6: Drift detection completed!")
     print("📊 Results saved to: results/step6_drift/")
+    print("🌐 Open evidently_drift_dashboard.html in browser for interactive analysis")
 
 if __name__ == "__main__":
     main()
