@@ -110,6 +110,7 @@ jobs:
     - name: Deploy to GKE
       run: |
         gcloud container clusters get-credentials $GKE_CLUSTER --zone $GKE_ZONE
+        chmod +x scripts/deploy.sh
         scripts/deploy.sh gcr.io/$PROJECT_ID/$IMAGE:$GITHUB_SHA
 
   # Step 4: API Testing
@@ -163,6 +164,7 @@ jobs:
     - name: Run Step 5 - Performance Testing
       run: |
         gcloud container clusters get-credentials $GKE_CLUSTER --zone $GKE_ZONE
+        chmod +x scripts/step5_performance.sh
         bash scripts/step5_performance.sh
         
     - name: Upload artifacts
@@ -287,9 +289,9 @@ jobs:
             f.write('\n'.join(report))
                 
         print('Report generated successfully!')
-                "
-              
-            - name: Upload Final Report
+        "
+      
+    - name: Upload Final Report
       uses: actions/upload-artifact@v4
       with:
         name: final-report
